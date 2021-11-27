@@ -23,6 +23,8 @@ public class TopicController {
 	
 	@Autowired
 	private TopicDao topicDao;
+	private static final String STATUS_SUCCESS = "SUCCESS";
+	private static final String STATUS_ERROR = "ERROR";
 	
 	@PostMapping(value = "/topic", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public int createTopic(@RequestBody Topic topic) {
@@ -56,12 +58,22 @@ public class TopicController {
 	
 	@PutMapping(value = "/topic/{topicsId}", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String updateCompany(@PathVariable int topicId, @RequestBody String name) {
-		return String.valueOf(topicDao.updateTopic(topicId, name));
+		try {
+			topicDao.updateTopic(topicId, name);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/topic/{topicsId}", produces = MediaType.TEXT_PLAIN_VALUE)
 	public String deleteCompany(@PathVariable int topicId) {
-		return String.valueOf(topicDao.deleteTopic(topicId));
+		try {
+			topicDao.deleteTopic(topicId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 }

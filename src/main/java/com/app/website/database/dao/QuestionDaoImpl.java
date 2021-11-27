@@ -1,6 +1,7 @@
 package com.app.website.database.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -25,24 +26,24 @@ public class QuestionDaoImpl implements QuestionDao{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public int postQuestion(PostQuestion requestQuestion) {
 		//Assuming that all the entities are already created
 		Session session = sessionFactory.getCurrentSession();
-		Question question = new Question(requestQuestion.getQuestion());
-		Company company = session.get(Company.class, requestQuestion.getCompanyId());
+		Question question = new Question(requestQuestion.getQuestion(), new Date().toLocaleString());
 		Subtopic subtopic = session.get(Subtopic.class, requestQuestion.getSubtopicId());
 		User user = session.get(User.class, requestQuestion.getUserId());
-		List<Tag> tags = new ArrayList<>();
 		if (requestQuestion.getTagId() != null) {
 			for (int tagId : requestQuestion.getTagId()) {
-				tags.add(session.get(Tag.class, tagId));
+				question.addTag(session.get(Tag.class, tagId));
 			}
 		}
-		if (company != null)
-			question.addCompany(company);
-		if (tags.size() != 0)
-			question.addTags(tags);
+		if (requestQuestion.getCompanyId() != null) {
+			for (int companyId : requestQuestion.getCompanyId()) {
+				question.addCompany(session.get(Company.class, companyId));
+			}
+		}
 		if (subtopic != null)
 			question.setSubtopic(subtopic);
 		int id = (int) session.save(question);
@@ -70,90 +71,68 @@ public class QuestionDaoImpl implements QuestionDao{
 	public List<Question> getQuestionsFromUser(int userId) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, userId);
-		user.forceLoadQuestions();
 		return user.getQuestions();
 	}
 
 	@Override
-	public boolean deleteQuestion(int id) {
+	public void deleteQuestion(int id) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question question = session.get(Question.class, id);
-			session.delete(question);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Question question = session.get(Question.class, id);
+		session.delete(question);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean removeTag(int questionId, int tagId) {
+	public void removeTag(int questionId, int tagId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question question = session.get(Question.class, questionId);
-			Tag tag = session.get(Tag.class, tagId);
-			question.removeTag(tag);
-			session.update(question);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Question question = session.get(Question.class, questionId);
+		question.setDateModified(new Date().toLocaleString());
+		Tag tag = session.get(Tag.class, tagId);
+		question.removeTag(tag);
+		session.update(question);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean addTag(int questionId, int tagId) {
+	public void addTag(int questionId, int tagId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question question = session.get(Question.class, questionId);
-			Tag tag = session.get(Tag.class, tagId);
-			question.addTag(tag);
-			session.update(question);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Question question = session.get(Question.class, questionId);
+		question.setDateModified(new Date().toLocaleString());
+		Tag tag = session.get(Tag.class, tagId);
+		question.addTag(tag);
+		session.update(question);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean removeCompany(int questionId, int companyId) {
+	public void removeCompany(int questionId, int companyId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question question = session.get(Question.class, questionId);
-			Company company = session.get(Company.class, companyId);
-			question.removeCompany(company);
-			session.update(question);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Question question = session.get(Question.class, questionId);
+		question.setDateModified(new Date().toLocaleString());
+		Company company = session.get(Company.class, companyId);
+		question.removeCompany(company);
+		session.update(question);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean addCompany(int questionId, int companyId) {
+	public void addCompany(int questionId, int companyId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question question = session.get(Question.class, questionId);
-			Company company = session.get(Company.class, companyId);
-			question.addCompany(company);
-			session.update(question);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Question question = session.get(Question.class, questionId);
+		question.setDateModified(new Date().toLocaleString());
+		Company company = session.get(Company.class, companyId);
+		question.addCompany(company);
+		session.update(question);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean editQuestion(int questionId, String question) {
+	public void editQuestion(int questionId, String question) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question q = session.get(Question.class, questionId);
-			q.setQuestion(question);
-			session.update(q);
-			return true;
-		}catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		Question q = session.get(Question.class, questionId);
+		q.setDateModified(new Date().toLocaleString());
+		q.setQuestion(question);
+		session.update(q);
 	}
 
 	@Override
@@ -198,7 +177,6 @@ public class QuestionDaoImpl implements QuestionDao{
 	public List<Company> getCompanies(int questionId) {
 		Session session = sessionFactory.getCurrentSession();
 		Question question = session.get(Question.class, questionId);
-		question.forceLoadCompanies();
 		return question.getCompanies();
 	}
 
@@ -206,7 +184,6 @@ public class QuestionDaoImpl implements QuestionDao{
 	public List<Tag> getTags(int questionId) {
 		Session session = sessionFactory.getCurrentSession();
 		Question question = session.get(Question.class, questionId);
-		question.forceLoadTags();
 		return question.getTags();
 	}
 
@@ -218,39 +195,28 @@ public class QuestionDaoImpl implements QuestionDao{
 	}
 
 	@Override
-	public boolean addLike(int questionId, int userId) {
+	public void addLike(int questionId, int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question question = session.get(Question.class, questionId);
-			User user = session.get(User.class, userId);
-			question.addLike(user);
-			session.update(user);
-			session.update(question);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Question question = session.get(Question.class, questionId);
+		User user = session.get(User.class, userId);
+		question.addLike(user);
+		session.update(user);
+		session.update(question);
 	}
 
 	@Override
 	public List<User> getLikes(int questionId) {
 		Session session = sessionFactory.getCurrentSession();
 		Question question = session.get(Question.class, questionId);
-		question.forceLoadLikes();
 		return question.getLikes();
 	}
 
 	@Override
-	public boolean removeLike(int questionId, int userId) {
+	public void removeLike(int questionId, int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Question question = session.get(Question.class, questionId);
-			User user = session.get(User.class, questionId);
-			question.removeLike(user);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Question question = session.get(Question.class, questionId);
+		User user = session.get(User.class, questionId);
+		question.removeLike(user);
 	}
 
 	@Override

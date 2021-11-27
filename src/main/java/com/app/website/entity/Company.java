@@ -65,6 +65,7 @@ public class Company {
 	}
 
 	public List<Question> getQuestions() {
+		forceLoadQuestions();
 		return questions;
 	}
 

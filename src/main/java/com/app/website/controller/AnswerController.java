@@ -25,6 +25,8 @@ public class AnswerController {
 	
 	@Autowired
 	private AnswerDao answerDao;
+	private static final String STATUS_SUCCESS = "SUCCESS";
+	private static final String STATUS_ERROR = "ERROR";
 	
 	@PostMapping(value = "/answer/user/{userId}/question/{questionId}")
 	public int postAnswer(@PathVariable int userId, @PathVariable int questionId, @RequestBody String answer) {
@@ -72,28 +74,53 @@ public class AnswerController {
 	}
 	
 	@PutMapping(value = "/answer/{answerId}", consumes = MediaType.TEXT_PLAIN_VALUE)
-	public boolean updateAnswer(@PathVariable int answerId, @RequestBody String answer) {
-		return answerDao.updateAnswer(answerId, answer);
+	public String updateAnswer(@PathVariable int answerId, @RequestBody String answer) {
+		try {
+			answerDao.updateAnswer(answerId, answer);
+			return STATUS_SUCCESS;
+		}catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@PutMapping(value = "/answer-comment/{answerCommentId}", consumes = MediaType.TEXT_PLAIN_VALUE)
-	public boolean updateAnswerComment(@PathVariable int answerCommentId, @RequestBody String comment) {
-		return answerDao.updateAnswerComment(answerCommentId, comment);
+	public String updateAnswerComment(@PathVariable int answerCommentId, @RequestBody String comment) {
+		try {
+			answerDao.updateAnswerComment(answerCommentId, comment);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping("/answer/{answerId}")
-	public boolean deleteAnswer(@PathVariable int answerId) {
-		return answerDao.deleteAnswer(answerId);
+	public String deleteAnswer(@PathVariable int answerId) {
+		try {
+			answerDao.deleteAnswer(answerId);
+			return STATUS_SUCCESS;
+		}catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping("/answer-comment/{answerCommentId}")
-	public boolean deleteAnswerComment(@PathVariable int answerCommentId) {
-		return answerDao.deleteAnswerComment(answerCommentId);
+	public String deleteAnswerComment(@PathVariable int answerCommentId) {
+		try {
+			answerDao.deleteAnswerComment(answerCommentId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@PutMapping(value = "/answer/{answerId}/like/{userId}")
 	public String addAnswerLike(@PathVariable int answerId, @PathVariable int userId) {
-		return String.valueOf(answerDao.addAnswerLike(answerId, userId));
+		try {
+			answerDao.addAnswerLike(answerId, userId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@GetMapping(value = "/answer/{answerId}/likes", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -103,7 +130,12 @@ public class AnswerController {
 	
 	@PutMapping(value = "/answer-comment/{answerCommentId}/like/{userId}")
 	public String addAnswerCommentLike(@PathVariable int answerCommentId, @PathVariable int userId) {
-		return String.valueOf(answerDao.addAnswerCommentLike(answerCommentId, userId));
+		try {
+			answerDao.addAnswerCommentLike(answerCommentId, userId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@GetMapping(value = "/answer-comment/{answerCommentId}/likes", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -113,12 +145,22 @@ public class AnswerController {
 	
 	@DeleteMapping(value = "/answer/{answerId}/like/{userId}")
 	public String removeLikeFromAnswer(@PathVariable int answerId, @PathVariable int userId) {
-		return String.valueOf(answerDao.removeAnswerLike(answerId, userId));
+		try {
+			answerDao.removeAnswerLike(answerId, userId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/answer-comment/{answerCommentId}/like/{userId}")
 	public String removeLikeFromAnswerComment(@PathVariable int answerCommentId, @PathVariable int userId) {
-		return String.valueOf(answerDao.removeAnswerCommentLike(answerCommentId, userId));
+		try {
+			answerDao.removeAnswerCommentLike(answerCommentId, userId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@GetMapping(value = "/answer-comment/{answerCommentId}/answer", produces = MediaType.APPLICATION_JSON_VALUE)

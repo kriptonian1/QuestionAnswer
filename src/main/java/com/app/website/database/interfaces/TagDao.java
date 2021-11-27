@@ -2,6 +2,7 @@ package com.app.website.database.interfaces;
 
 import java.util.List;
 
+import com.app.website.entity.Question;
 import com.app.website.entity.Tag;
 
 public interface TagDao {
@@ -11,7 +12,8 @@ public interface TagDao {
 	public Tag getTagByName(String name);
 	public Tag getTagById(int id);
 	public List<Tag> getAllTags();
-	public boolean updateTag(int id, String name);
-	public boolean deleteTag(int id);
+	public List<Question> getQuestionOfTag(int tagId);
+	public void updateTag(int id, String name);
+	public void deleteTag(int id);
 
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.app.website.database.interfaces.UserDao;
+import com.app.website.entity.Notification;
 import com.app.website.entity.User;
 
 @Repository
@@ -81,82 +82,48 @@ public class UserDaoImpl implements UserDao{
 	}
 
 	@Override
-	public boolean deleteUser(int userId) {
+	public void deleteUser(int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			User user = session.get(User.class, userId);
-			session.delete(user);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		User user = session.get(User.class, userId);
+		session.delete(user);
 	}
 
 	@Override
-	public boolean updateUserFirstName(int userId, String firstName) {
+	public void updateUserFirstName(int userId, String firstName) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			User user = session.get(User.class, userId);
-			user.setFirstName(firstName);
-			session.update(user);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		User user = session.get(User.class, userId);
+		user.setFirstName(firstName);
+		session.update(user);
 	}
 
 	@Override
-	public boolean updateUserLastName(int userId, String lastName) {
+	public void updateUserLastName(int userId, String lastName) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			User user = session.get(User.class, userId);
-			user.setLastName(lastName);
-			session.update(user);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		User user = session.get(User.class, userId);
+		user.setLastName(lastName);
+		session.update(user);
 	}
 
 	@Override
-	public boolean updateUserPassword(int userId, String password) {
-		// TODO Auto-generated method stub
-		return false;
+	public void updateUserPassword(int userId, String password) {
+		Session session = sessionFactory.getCurrentSession();
+		User user = session.get(User.class, userId);
+		user.setPassword(password);
+		session.update(user);
 	}
 
 	@Override
-	public boolean addFollower(int userId, int followerUserId) {
+	public void addFollower(int userId, int followerUserId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			User user = session.get(User.class, userId);
-			User followerUser = session.get(User.class, followerUserId);
-			user.addFollower(followerUser);
-			session.update(user);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean addFollowing(int userId, int followingUserId) {
-		Session session = sessionFactory.getCurrentSession();
-		try {
-			User user = session.get(User.class, userId);
-			User followingUser = session.get(User.class, followingUserId);
-			user.addFollower(followingUser);
-			session.update(user);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+		User user = session.get(User.class, userId);
+		User followerUser = session.get(User.class, followerUserId);
+		user.addFollower(followerUser);
 	}
 
 	@Override
 	public List<User> getFollowers(int userId) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, userId);
-		user.forceLoadFollowers();
 		return user.getFollowers();
 	}
 
@@ -164,7 +131,6 @@ public class UserDaoImpl implements UserDao{
 	public List<User> getFollowing(int userId) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, userId);
-		user.forceLoadFollowing();
 		return user.getFollowing();
 	}
 
@@ -172,7 +138,6 @@ public class UserDaoImpl implements UserDao{
 	public User getFollowerById(int userId, int followerId) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, userId);
-		user.forceLoadFollowers();
 		for (User u : user.getFollowers())
 			if (u.getId() == followerId)
 				return u;
@@ -183,7 +148,6 @@ public class UserDaoImpl implements UserDao{
 	public User getFollowingById(int userId, int followingId) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, userId);
-		user.forceLoadFollowing();
 		for (User u : user.getFollowing())
 			if (u.getId() == followingId)
 				return u;
@@ -191,31 +155,67 @@ public class UserDaoImpl implements UserDao{
 	}
 
 	@Override
-	public boolean removeFollower(int userId, int followerUserId) {
+	public void removeFollower(int userId, int followerUserId) {
 		Session session = sessionFactory.getCurrentSession();
+		User user = session.get(User.class, userId);
+		User followerUser = session.get(User.class, followerUserId);
+		user.removeFollower(followerUser);
+		session.update(user);
+	}
+
+	@Override
+	public void removeFollowing(int userId, int followingUserId) {
+		Session session = sessionFactory.getCurrentSession();
+		User user = session.get(User.class, userId);
+		User followingUser = session.get(User.class, followingUserId);
+		user.removeFollowing(followingUser);
+		session.update(user);
+	}
+
+	@Override
+	public int addNotification(int userId, Notification notification) {
+		Session session = sessionFactory.getCurrentSession();
+		User user = session.get(User.class, userId);
 		try {
-			User user = session.get(User.class, userId);
-			User followerUser = session.get(User.class, followerUserId);
-			user.removeFollower(followerUser);
+			Notification n = (Notification) session.createQuery(String.format("from Notification where userId='%d' and notification='%s' and url='%s'", notification.getUserId(), notification.getNotification(), notification.getUrl()));
+			user.addNotification(n);
 			session.update(user);
-			return true;
-		}catch (Exception e) {
-			return false;
+			return notification.getId();
+		} catch (Exception e) {
+			int id = (int) session.save(notification);
+			user.addNotification(notification);
+			session.update(user);
+			return id;
 		}
 	}
 
 	@Override
-	public boolean removeFollowing(int userId, int followingUserId) {
+	public List<Notification> getAllNotifications(int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			User user = session.get(User.class, userId);
-			User followingUser = session.get(User.class, followingUserId);
-			user.removeFollowing(followingUser);
-			session.update(user);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		User user = session.get(User.class, userId);
+		return user.getNotifications();
+	}
+
+	@Override
+	public Notification getNotificationById(int notificationId) {
+		Session session = sessionFactory.getCurrentSession();
+		return session.get(Notification.class, notificationId);
+	}
+
+	@Override
+	public void removeNotification(int userId, int notificationId) {
+		Session session = sessionFactory.getCurrentSession();
+		User user = session.get(User.class, userId);
+		Notification notification = session.get(Notification.class, notificationId);
+		user.removeNotification(notification);
+		session.update(user);
+	}
+
+	@Override
+	public boolean isPasswordCorrect(int userId, String password) {
+		Session session = sessionFactory.getCurrentSession();
+		User user = session.get(User.class, userId);
+		return password.equals(user.getPassword());
 	}
 	
 }

@@ -17,10 +17,10 @@ public interface AnswerDao {
 	public List<Answer> getAnswersToQuestion(int questionId);
 	public Question getQuestionToAnswer(int answerId);
 	public List<User> getAnswerLikes(int answerId);
-	public boolean addAnswerLike(int answerId, int userId);
-	public boolean removeAnswerLike(int answerId, int userId);
-	public boolean updateAnswer(int answerId, String answer);
-	public boolean deleteAnswer(int answerId);
+	public void addAnswerLike(int answerId, int userId);
+	public void removeAnswerLike(int answerId, int userId);
+	public void updateAnswer(int answerId, String answer);
+	public void deleteAnswer(int answerId);
 	
 	//--------Answer Comment---------//
 	public int postAnswerComment(int userId, int answerId, String comment);
@@ -29,9 +29,9 @@ public interface AnswerDao {
 	public List<User> getAnswerCommentLikes(int answerCommentId);
 	public List<AnswerComment> getAnswerCommentsToAnswer(int answerId);
 	public List<AnswerComment> getAnswerCommentsByUser(int userId);
-	public boolean updateAnswerComment(int answerCommentId, String comment);
-	public boolean deleteAnswerComment(int answerCommentId);
-	public boolean addAnswerCommentLike(int answerCommentId, int userId);
-	public boolean removeAnswerCommentLike(int answerCommentId, int userId);
+	public void updateAnswerComment(int answerCommentId, String comment);
+	public void deleteAnswerComment(int answerCommentId);
+	public void addAnswerCommentLike(int answerCommentId, int userId);
+	public void removeAnswerCommentLike(int answerCommentId, int userId);
 
 }

@@ -13,7 +13,7 @@ public interface SubtopicDao {
 	public List<Subtopic> getSubtopicsByName(String name);
 	public List<Subtopic> getAllSubtopics();
 	public Topic getTopic(int id);
-	public boolean updateSubtopic(int id, String name);
-	public boolean deleteSubtopic(int id);
+	public void updateSubtopic(int id, String name);
+	public void deleteSubtopic(int id);
 
 }

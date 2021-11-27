@@ -5,7 +5,7 @@ import java.util.List;
 public class PostQuestion {
 	
 	private String question;
-	private int companyId;
+	private List<Integer> companyId;
 	private int subtopicId;
 	private List<Integer> tagId;
 	private int userId;
@@ -14,7 +14,7 @@ public class PostQuestion {
 		
 	}
 	
-	public PostQuestion(String question, int companyId, int subtopicId, List<Integer> tagId, int userId) {
+	public PostQuestion(String question, List<Integer> companyId, int subtopicId, List<Integer> tagId, int userId) {
 		super();
 		this.question = question;
 		this.companyId = companyId;
@@ -27,7 +27,7 @@ public class PostQuestion {
 		return question;
 	}
 	
-	public int getCompanyId() {
+	public List<Integer> getCompanyId() {
 		return companyId;
 	}
 	
@@ -47,7 +47,7 @@ public class PostQuestion {
 		this.question = question;
 	}
 	
-	public void setCompanyId(int companyId) {
+	public void setCompanyId(List<Integer> companyId) {
 		this.companyId = companyId;
 	}
 	

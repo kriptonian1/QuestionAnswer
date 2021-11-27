@@ -24,13 +24,13 @@ public interface QuestionDao {
 	public Subtopic getSubtopic(int questionId);
 	public User getCreator(int questionId);
 	public List<User> getLikes(int questionId);
-	public boolean deleteQuestion(int id);
-	public boolean removeTag(int questionId, int tagId);
-	public boolean addTag(int questionId, int tagId);
-	public boolean removeCompany(int questionId, int companyId);
-	public boolean addCompany(int questionId, int companyId);
-	public boolean editQuestion(int questionId, String question);
-	public boolean addLike(int questionId, int userId);
-	public boolean removeLike(int questionId, int userId);
+	public void deleteQuestion(int id);
+	public void removeTag(int questionId, int tagId);
+	public void addTag(int questionId, int tagId);
+	public void removeCompany(int questionId, int companyId);
+	public void addCompany(int questionId, int companyId);
+	public void editQuestion(int questionId, String question);
+	public void addLike(int questionId, int userId);
+	public void removeLike(int questionId, int userId);
 
 }

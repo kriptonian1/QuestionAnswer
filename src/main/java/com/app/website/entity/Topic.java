@@ -12,8 +12,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,6 +32,14 @@ public class Topic {
 	@Column(name = FIELD_TOPIC)
 	private String topic;
 	
+	@ManyToOne(fetch = FetchType.EAGER ,cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = FIELD_DOMAIN_ID)
+	private Domain domain;
+	
+	@Transient
+	@JsonIgnore
+	private int domainId;
+	
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "topic")
 	private List<Subtopic> subtopics;
@@ -37,8 +48,9 @@ public class Topic {
 		
 	}
 	
-	public Topic(String topic) {
+	public Topic(String topic, int domainId) {
 		this.topic = topic;
+		this.domainId = domainId;
 	}
 
 	public int getId() {
@@ -66,6 +78,22 @@ public class Topic {
 		this.subtopics = subtopics;
 	}
 	
+	public Domain getDomain() {
+		return domain;
+	}
+
+	public int getDomainId() {
+		return domainId;
+	}
+
+	public void setDomain(Domain domain) {
+		this.domain = domain;
+	}
+
+	public void setDomainId(int domainId) {
+		this.domainId = domainId;
+	}
+
 	public void addSubtopic(Subtopic subtopic) {
 		if (subtopics == null)
 			subtopics = new ArrayList<>();

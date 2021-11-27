@@ -93,7 +93,7 @@ public class Subtopic {
 		this.questions = questions;
 	}
 	
-	public void forceLoadQuestions() {
+	private void forceLoadQuestions() {
 		try {
 			this.questions.size();
 		} catch (NullPointerException e) {

@@ -73,28 +73,18 @@ public class SubtopicDaoImpl implements SubtopicDao {
 	}
 
 	@Override
-	public boolean updateSubtopic(int id, String name) {
+	public void updateSubtopic(int id, String name) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Subtopic subtopic = session.get(Subtopic.class, id);
-			subtopic.setSubtopic(name);
-			session.save(subtopic);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Subtopic subtopic = session.get(Subtopic.class, id);
+		subtopic.setSubtopic(name);
+		session.save(subtopic);
 	}
 
 	@Override
-	public boolean deleteSubtopic(int id) {
+	public void deleteSubtopic(int id) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Subtopic subtopic = session.get(Subtopic.class, id);
-			session.delete(subtopic);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Subtopic subtopic = session.get(Subtopic.class, id);
+		session.delete(subtopic);
 	}
 
 	@Override

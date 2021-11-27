@@ -65,6 +65,7 @@ public class Tag {
 	}
 
 	public List<Question> getQuestions() {
+		forceLoadQuestions();
 		return questions;
 	}
 
@@ -73,7 +74,7 @@ public class Tag {
 		this.questions = questions;
 	}
 	
-	public void forceLoadQuestions() {
+	private void forceLoadQuestions() {
 		try {
 			this.questions.size();
 		} catch (NullPointerException e) {

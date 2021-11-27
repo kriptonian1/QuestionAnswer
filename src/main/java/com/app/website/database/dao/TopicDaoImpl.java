@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.app.website.database.interfaces.TopicDao;
+import com.app.website.entity.Domain;
 import com.app.website.entity.Subtopic;
 import com.app.website.entity.Topic;
 
@@ -65,28 +66,18 @@ public class TopicDaoImpl implements TopicDao {
 	}
 
 	@Override
-	public boolean updateTopic(int id, String topic) {
+	public void updateTopic(int id, String topic) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Topic t = session.get(Topic.class, id);
-			t.setTopic(topic);
-			session.save(t);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Topic t = session.get(Topic.class, id);
+		t.setTopic(topic);
+		session.save(t);
 	}
 
 	@Override
-	public boolean deleteTopic(int id) {
+	public void deleteTopic(int id) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Topic t = session.get(Topic.class, id);
-			session.delete(t);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Topic t = session.get(Topic.class, id);
+		session.delete(t);
 	}
 	
 	@Override
@@ -99,6 +90,13 @@ public class TopicDaoImpl implements TopicDao {
 		}catch (Exception e) {
 		}
 		return subtopics;
+	}
+	
+	@Override
+	public Domain getDomain(int topicId) {
+		Session session = sessionFactory.getCurrentSession();
+		Topic topic = session.get(Topic.class, topicId);
+		return topic.getDomain();
 	}
 
 }

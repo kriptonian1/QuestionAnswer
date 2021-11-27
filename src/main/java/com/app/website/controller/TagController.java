@@ -22,6 +22,8 @@ public class TagController {
 	
 	@Autowired
 	private TagDao tagDao;
+	private static final String STATUS_SUCCESS = "SUCCESS";
+	private static final String STATUS_ERROR = "ERROR";
 	
 	@PostMapping(value = "/tag", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public int createTag(@RequestBody Tag tag) {
@@ -50,12 +52,22 @@ public class TagController {
 	
 	@PutMapping(value = "/tag/{tagId}", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String updateCompany(@PathVariable int tagId, @RequestBody String name) {
-		return String.valueOf(tagDao.updateTag(tagId, name));
+		try {
+			tagDao.updateTag(tagId, name);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/tag/{tagId}", produces = MediaType.TEXT_PLAIN_VALUE)
 	public String deleteCompany(@PathVariable int tagId) {
-		return String.valueOf(tagDao.deleteTag(tagId));
+		try {
+			tagDao.deleteTag(tagId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 }

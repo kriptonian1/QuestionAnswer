@@ -39,6 +39,16 @@ public class User {
 	private String email;
 	
 	@JsonIgnore
+	@Column(name = FIELD_PASSWORD)
+	private String password;
+	
+	@Column(name = FIELD_RANK)
+	private int rank;
+	
+	@Column(name = FIELD_EXP)
+	private int exp;
+	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "creatorUser")
 	private List<Answer> answers;
 	
@@ -95,6 +105,24 @@ public class User {
 			)
 	private List<User> following;
 	
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(
+			name = TABLE_USER_NOTIFICATION,
+			joinColumns = @JoinColumn(name = FIELD_USER_ID),
+			inverseJoinColumns = @JoinColumn(name = FIELD_NOTIFICATION_ID)
+			)
+	private List<Notification> notifications;
+	
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(
+			name = TABLE_USER_DOMAIN_PREFERENCE,
+			joinColumns = @JoinColumn(name = FIELD_USER_ID),
+			inverseJoinColumns = @JoinColumn(name = FIELD_DOMAIN_ID)
+			)
+	private List<Domain> domains;
+	
 	public User() {
 	}
 
@@ -103,6 +131,14 @@ public class User {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
+	}
+
+	public User(String firstName, String lastName, String email, String password) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
 	}
 
 	public int getId() {
@@ -138,22 +174,27 @@ public class User {
 	}
 
 	public List<Answer> getAnswers() {
+		forceLoadAnswers();
 		return answers;
 	}
 
 	public List<AnswerComment> getAnswerComments() {
+		forceLoadAnswerComments();
 		return answerComments;
 	}
 
 	public List<Answer> getLikedAnswers() {
+		forceLoadLikedAnswers();
 		return likedAnswers;
 	}
 
 	public List<AnswerComment> getLikedAnswerComments() {
+		forceLoadLikedAnswerComments();
 		return likedAnswerComments;
 	}
 
 	public List<Question> getLikedQuestions() {
+		forceLoadLikedQuestions();
 		return likedQuestions;
 	}
 
@@ -178,6 +219,7 @@ public class User {
 	}
 	
 	public List<Question> getQuestions() {
+		forceLoadQuestions();
 		return questions;
 	}
 
@@ -186,10 +228,12 @@ public class User {
 	}
 
 	public List<User> getFollowers() {
+		forceLoadFollowers();
 		return followers;
 	}
 
 	public List<User> getFollowing() {
+		forceLoadFollowing();
 		return following;
 	}
 
@@ -199,6 +243,48 @@ public class User {
 
 	public void setFollowing(List<User> following) {
 		this.following = following;
+	}
+
+	public List<Notification> getNotifications() {
+		forceLoadNotifications();
+		return notifications;
+	}
+
+	public void setNotifications(List<Notification> notifications) {
+		this.notifications = notifications;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public int getRank() {
+		return rank;
+	}
+
+	public int getExp() {
+		return exp;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
+	public void setExp(int exp) {
+		this.exp = exp;
+	}
+
+	public List<Domain> getDomains() {
+		forceLoadDomains();
+		return domains;
+	}
+
+	public void setDomains(List<Domain> domains) {
+		this.domains = domains;
 	}
 
 	public void addAnswer(Answer answer) {
@@ -250,8 +336,7 @@ public class User {
 		forceLoadFollowers();
 		if (followers == null)
 			followers = new ArrayList<>();
-		user.addFollower(user);
-		user.addFollowing(this);
+		followers.add(user);
 	}
 	
 	public void addFollowing(User user) {
@@ -259,7 +344,25 @@ public class User {
 		if (following == null)
 			following = new ArrayList<>();
 		following.add(user);
-		user.addFollower(this);
+	}
+	
+	public void addNotification(Notification notification) {
+		forceLoadNotifications();
+		if (notifications == null)
+			notifications = new ArrayList<>();
+		notifications.add(notification);
+	}
+	
+	public void addDomain(Domain domain) {
+		forceLoadDomains();
+		if (domains == null)
+			domains = new ArrayList<>();
+		domains.add(domain);
+	}
+	
+	public void removeNotification(Notification notification) {
+		forceLoadNotifications();
+		notifications.remove(notification);
 	}
 	
 	public void removeFollower(User user) {
@@ -277,59 +380,73 @@ public class User {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email;
 	}
 	
-	public void forceLoadAnswerComments() {
+	private void forceLoadAnswerComments() {
 		try {
-			this.getAnswerComments().size();
+			this.answerComments.size();
 		} catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadAnswers() {
+	private void forceLoadAnswers() {
 		try {
-			this.getAnswers().size();
+			this.likedAnswers.size();
 		} catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadLikedAnswers() {
+	private void forceLoadLikedAnswers() {
 		try {
-			this.getLikedAnswers().size();
+			this.likedAnswers.size();
 		} catch (Exception e) {
 		}
 	}
 	
-	public void forceLoadLikedAnswerComments() {
+	private void forceLoadLikedAnswerComments() {
 		try {
-			this.getLikedAnswerComments().size();
+			this.likedAnswerComments.size();
 		} catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadQuestions() {
+	private void forceLoadQuestions() {
 		try {
-			this.getQuestions().size();
+			this.questions.size();
 		} catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadLikedQuestions() {
+	private void forceLoadLikedQuestions() {
 		try {
-			this.getLikedQuestions().size();
+			this.likedQuestions.size();
 		} catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadFollowers() {
+	private void forceLoadFollowers() {
 		try {
-			this.getFollowers().size();
+			this.followers.size();
 		} catch (Exception e) {
 		}
 	}
 	
-	public void forceLoadFollowing() {
+	private void forceLoadFollowing() {
 		try {
-			this.getFollowing().size();
+			this.following.size();
 		} catch (Exception e) {
+		}
+	}
+	
+	private void forceLoadNotifications() {
+		try {
+			this.notifications.size();
+		} catch (Exception e) {
+		}
+	}
+	
+	private void forceLoadDomains() {
+		try {
+			this.domains.size();
+		}catch (Exception e) {
 		}
 	}
 	

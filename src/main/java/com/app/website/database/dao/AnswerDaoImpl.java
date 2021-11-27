@@ -1,5 +1,6 @@
 package com.app.website.database.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -21,10 +22,11 @@ public class AnswerDaoImpl implements AnswerDao {
 	@Autowired
 	private SessionFactory sessionFactory;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public int postAnswer(int userId, int questionId, String answer) {
 		Session session = sessionFactory.getCurrentSession();
-		Answer a = new Answer(answer);
+		Answer a = new Answer(answer, new Date().toLocaleString());
 		Question question = session.get(Question.class, questionId);
 		User user = session.get(User.class, userId);
 		user.addAnswer(a);
@@ -46,7 +48,6 @@ public class AnswerDaoImpl implements AnswerDao {
 	public List<Answer> getAnswersByUser(int userId) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, userId);
-		user.forceLoadAnswers();
 		return user.getAnswers();
 	}
 
@@ -54,7 +55,6 @@ public class AnswerDaoImpl implements AnswerDao {
 	public List<Answer> getAnswersToQuestion(int questionId) {
 		Session session = sessionFactory.getCurrentSession();
 		Question question = session.get(Question.class, questionId);
-		question.forceLoadAnswers();
 		return question.getAnswers();
 	}
 
@@ -62,7 +62,6 @@ public class AnswerDaoImpl implements AnswerDao {
 	public List<AnswerComment> getAnswerCommentsToAnswer(int answerId) {
 		Session session = sessionFactory.getCurrentSession();
 		Answer answer = session.get(Answer.class, answerId);
-		answer.forceLoadAnswerComments();
 		return answer.getAnswerComments();
 	}
 	
@@ -70,16 +69,16 @@ public class AnswerDaoImpl implements AnswerDao {
 	public List<AnswerComment> getAnswerCommentsByUser(int answerId) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, answerId);
-		user.forceLoadAnswerComments();
 		return user.getAnswerComments();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public int postAnswerComment(int userId, int answeId, String comment) {
+	public int postAnswerComment(int userId, int answerId, String comment) {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, userId);
-		Answer answer = session.get(Answer.class, answeId);
-		AnswerComment answerComment = new AnswerComment(comment);
+		Answer answer = session.get(Answer.class, answerId);
+		AnswerComment answerComment = new AnswerComment(comment, new Date().toLocaleString());
 		answer.addAnswerComment(answerComment);
 		user.addAnswerComment(answerComment);
 		int id = (int) session.save(answerComment);
@@ -88,57 +87,39 @@ public class AnswerDaoImpl implements AnswerDao {
 		return id;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean updateAnswer(int answerId, String answer) {
+	public void updateAnswer(int answerId, String answer) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Answer a = session.get(Answer.class, answerId);
-			a.setAnswer(answer);
-			session.update(a);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Answer a = session.get(Answer.class, answerId);
+		a.setDateModified(new Date().toLocaleString());
+		a.setAnswer(answer);
+		session.update(a);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void updateAnswerComment(int answerCommentId, String comment) {
+		Session session = sessionFactory.getCurrentSession();
+		AnswerComment a = session.get(AnswerComment.class, answerCommentId);
+		a.setDateModified(new Date().toLocaleString());
+		a.setComment(comment);
+		session.update(a);
 	}
 
 	@Override
-	public boolean updateAnswerComment(int answerCommentId, String comment) {
+	public void deleteAnswer(int answerId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			AnswerComment a = session.get(AnswerComment.class, answerCommentId);
-			a.setComment(comment);
-			session.update(a);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Answer answer = session.get(Answer.class, answerId);
+		System.out.println(answer);
+		session.delete(answer);
 	}
 
 	@Override
-	public boolean deleteAnswer(int answerId) {
+	public void deleteAnswerComment(int answerCommentId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Answer answer = session.get(Answer.class, answerId);
-			System.out.println(answer);
-			session.delete(answer);
-			return true;
-		}catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	@Override
-	public boolean deleteAnswerComment(int answerCommentId) {
-		Session session = sessionFactory.getCurrentSession();
-		try {
-			AnswerComment answerComment = session.get(AnswerComment.class, answerCommentId);
-			session.delete(answerComment);
-			return true;
-		}catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		AnswerComment answerComment = session.get(AnswerComment.class, answerCommentId);
+		session.delete(answerComment);
 	}
 
 	@Override
@@ -152,38 +133,27 @@ public class AnswerDaoImpl implements AnswerDao {
 	public List<User> getAnswerLikes(int answerId) {
 		Session session = sessionFactory.getCurrentSession();
 		Answer answer = session.get(Answer.class, answerId);
-		answer.forceLoadAnswerLikes();
 		return answer.getUsersLiked();
 	}
 
 	@Override
-	public boolean addAnswerLike(int answerId, int userId) {
+	public void addAnswerLike(int answerId, int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Answer answer = session.get(Answer.class, answerId);
-			User user = session.get(User.class, userId);
-			answer.addLikedUser(user);
-//			session.update(user);
-			session.update(answer);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Answer answer = session.get(Answer.class, answerId);
+		User user = session.get(User.class, userId);
+		answer.addLikedUser(user);
+//		session.update(user);
+		session.update(answer);
 	}
 
 	@Override
-	public boolean removeAnswerLike(int answerId, int userId) {
+	public void removeAnswerLike(int answerId, int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Answer answer = session.get(Answer.class, answerId);
-			User user = session.get(User.class, userId);
-			answer.removeLikedUser(user);
-//			session.update(user);
-			session.update(answer);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Answer answer = session.get(Answer.class, answerId);
+		User user = session.get(User.class, userId);
+		answer.removeLikedUser(user);
+//		session.update(user);
+		session.update(answer);
 	}
 
 	@Override
@@ -204,36 +174,25 @@ public class AnswerDaoImpl implements AnswerDao {
 	public List<User> getAnswerCommentLikes(int answerCommentId) {
 		Session session = sessionFactory.getCurrentSession();
 		AnswerComment answerComment = session.get(AnswerComment.class, answerCommentId);
-		answerComment.forceLoadAnswerCommentLikes();
 		return answerComment.getUsersLiked();
 	}
 
 	@Override
-	public boolean addAnswerCommentLike(int answerCommentId, int userId) {
+	public void addAnswerCommentLike(int answerCommentId, int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			AnswerComment answerComment = session.get(AnswerComment.class, answerCommentId);
-			User user = session.get(User.class, userId);
-			answerComment.addLikedUser(user);
-			session.save(answerComment);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+		AnswerComment answerComment = session.get(AnswerComment.class, answerCommentId);
+		User user = session.get(User.class, userId);
+		answerComment.addLikedUser(user);
+		session.save(answerComment);
 	}
 
 	@Override
-	public boolean removeAnswerCommentLike(int answerCommentId, int userId) {
+	public void removeAnswerCommentLike(int answerCommentId, int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			AnswerComment answerComment = session.get(AnswerComment.class, answerCommentId);
-			User user = session.get(User.class, userId);
-			answerComment.removeLikedUser(user);
-			session.save(answerComment);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+		AnswerComment answerComment = session.get(AnswerComment.class, answerCommentId);
+		User user = session.get(User.class, userId);
+		answerComment.removeLikedUser(user);
+		session.save(answerComment);
 	}
 	
 	

@@ -32,6 +32,12 @@ public class AnswerComment {
 	@Column(name = FIELD_ANSWER_COMMENT)
 	private String comment;
 	
+	@Column(name = FIELD_DATE_CREATED)
+	private String dateCreated;
+	
+	@Column(name = FIELD_DATE_MODIFIED)
+	private String dateModified;
+	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER ,cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = FIELD_USER_ID)
@@ -55,8 +61,10 @@ public class AnswerComment {
 
 	}
 	
-	public AnswerComment(String comment) {
+	public AnswerComment(String comment, String dateCreated) {
 		this.comment = comment;
+		this.dateCreated = dateCreated;
+		dateModified = dateCreated;
 	}
 
 	public int getId() {
@@ -71,6 +79,14 @@ public class AnswerComment {
 		this.id = id;
 	}
 
+	public String getDateModified() {
+		return dateModified;
+	}
+
+	public void setDateModified(String dateModified) {
+		this.dateModified = dateModified;
+	}
+
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
@@ -83,6 +99,14 @@ public class AnswerComment {
 		this.commentUser = commentUser;
 	}
 
+	public String getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(String dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
 	public Answer getAnswer() {
 		return answer;
 	}
@@ -92,6 +116,7 @@ public class AnswerComment {
 	}
 
 	public List<User> getUsersLiked() {
+		forceLoadAnswerCommentLikes();
 		return usersLiked;
 	}
 	
@@ -107,7 +132,7 @@ public class AnswerComment {
 		usersLiked.remove(user);
 	}
 	
-	public void forceLoadAnswerCommentLikes() {
+	private void forceLoadAnswerCommentLikes() {
 		try {
 			usersLiked.size();
 		} catch (NullPointerException e) {

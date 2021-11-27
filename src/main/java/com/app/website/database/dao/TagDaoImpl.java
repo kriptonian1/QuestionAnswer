@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.app.website.database.interfaces.TagDao;
+import com.app.website.entity.Question;
 import com.app.website.entity.Tag;
 
 @Repository
@@ -53,28 +54,18 @@ public class TagDaoImpl implements TagDao {
 	}
 
 	@Override
-	public boolean updateTag(int id, String name) {
+	public void updateTag(int id, String name) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Tag tag = getTagById(id);
-			tag.setName(name);
-			session.update(tag);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Tag tag = getTagById(id);
+		tag.setName(name);
+		session.update(tag);
 	}
 
 	@Override
-	public boolean deleteTag(int id) {
+	public void deleteTag(int id) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Tag tag = getTagById(id);
-			session.delete(tag);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Tag tag = getTagById(id);
+		session.delete(tag);
 	}
 
 	@Override
@@ -85,6 +76,13 @@ public class TagDaoImpl implements TagDao {
 		}catch (Exception e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<Question> getQuestionOfTag(int tagId) {
+		Session session = sessionFactory.getCurrentSession();
+		Tag tag = session.get(Tag.class, tagId);
+		return tag.getQuestions();
 	}
 
 }

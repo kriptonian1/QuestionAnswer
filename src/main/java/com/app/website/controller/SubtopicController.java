@@ -23,6 +23,8 @@ public class SubtopicController {
 	
 	@Autowired
 	private SubtopicDao subtopicDao;
+	private static final String STATUS_SUCCESS = "SUCCESS";
+	private static final String STATUS_ERROR = "ERROR";
 	
 	@PostMapping(value = "/subtopic", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public int createSubtopic(@RequestBody Subtopic subtopic) {
@@ -51,12 +53,22 @@ public class SubtopicController {
 	
 	@PutMapping(value = "/subtopic/{subtopicId}", consumes = MediaType.TEXT_PLAIN_VALUE)
 	public String updateSubtopic(@PathVariable int subtopicId, @RequestBody String name) {
-		return String.valueOf(subtopicDao.updateSubtopic(subtopicId, name));
+		try {
+			subtopicDao.updateSubtopic(subtopicId, name);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/subtopic/{subtopicId}")
 	public String deleteSubtopic(@PathVariable int subtopicId) {
-		return String.valueOf(subtopicDao.deleteSubtopic(subtopicId));
+		try {
+			subtopicDao.deleteSubtopic(subtopicId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@GetMapping(value = "/subtopic/{subtopicId}/topic", produces = MediaType.APPLICATION_JSON_VALUE)

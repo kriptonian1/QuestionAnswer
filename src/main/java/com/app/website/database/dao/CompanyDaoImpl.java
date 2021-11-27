@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.app.website.database.interfaces.CompanyDao;
 import com.app.website.entity.Company;
+import com.app.website.entity.Question;
 
 @Repository
 @Transactional
@@ -52,28 +53,18 @@ public class CompanyDaoImpl implements CompanyDao{
 	}
 
 	@Override
-	public boolean updateCompany(int id, String name) {
+	public void updateCompany(int id, String name) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Company company = session.get(Company.class, id);
-			company.setName(name);
-			session.update(company);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Company company = session.get(Company.class, id);
+		company.setName(name);
+		session.update(company);
 	}
 
 	@Override
-	public boolean deleteCompany(int id) {
+	public void deleteCompany(int id) {
 		Session session = sessionFactory.getCurrentSession();
-		try {
-			Company company = session.get(Company.class, id);
-			session.delete(company);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
+		Company company = session.get(Company.class, id);
+		session.delete(company);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -81,6 +72,13 @@ public class CompanyDaoImpl implements CompanyDao{
 	public List<Company> getAllCompanies() {
 		Session session = sessionFactory.getCurrentSession();
 		return session.createQuery("from Company").getResultList();
+	}
+
+	@Override
+	public List<Question> getAllQuestionsOfCompany(int companyId) {
+		Session session = sessionFactory.getCurrentSession();
+		Company company = session.get(Company.class, companyId);
+		return company.getQuestions();
 	}
 	
 }

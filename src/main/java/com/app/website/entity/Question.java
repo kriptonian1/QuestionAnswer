@@ -33,6 +33,12 @@ public class Question {
 	@Column(name = FIELD_QUESTION)
 	private String question;
 	
+	@Column(name = FIELD_DATE_CREATED)
+	private String dateCreated;
+	
+	@Column(name = FIELD_DATE_MODIFIED)
+	private String dateModified;
+	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = FIELD_USER_ID)
@@ -82,6 +88,13 @@ public class Question {
 		this.question = question;
 	}
 
+	public Question(String question, String dateCreated) {
+		super();
+		this.question = question;
+		this.dateCreated = dateCreated;
+		dateModified = dateCreated;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -107,6 +120,7 @@ public class Question {
 	}
 
 	public List<Answer> getAnswers() {
+		forceLoadAnswers();
 		return answers;
 	}
 
@@ -115,6 +129,7 @@ public class Question {
 	}
 
 	public List<Tag> getTags() {
+		forceLoadTags();
 		return tags;
 	}
 
@@ -122,7 +137,16 @@ public class Question {
 		this.tags = tags;
 	}
 	
+	public String getDateModified() {
+		return dateModified;
+	}
+
+	public void setDateModified(String dateModified) {
+		this.dateModified = dateModified;
+	}
+
 	public List<Company> getCompanies() {
+		forceLoadCompanies();
 		return companies;
 	}
 
@@ -131,11 +155,20 @@ public class Question {
 	}
 
 	public List<User> getLikes() {
+		forceLoadLikes();
 		return likes;
 	}
 
 	public void setLikes(List<User> likes) {
 		this.likes = likes;
+	}
+
+	public String getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(String dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 
 	public Subtopic getSubtopic() {
@@ -200,39 +233,33 @@ public class Question {
 		user.addLikedQuestion(this);
 	}
 	
-	public void forceLoadAnswers() {
+	private void forceLoadAnswers() {
 		try {
-			this.getAnswers().size();
+			this.answers.size();
 		}catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadTags() {
+	private void forceLoadTags() {
 		try {
-			this.getTags().size();
+			this.tags.size();
 		}catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadCompanies() {
+	private void forceLoadCompanies() {
 		try {
-			this.getCompanies().size();
+			this.companies.size();
 		}catch (NullPointerException e) {
 		}
 	}
 	
-	public void forceLoadLikes() {
+	private void forceLoadLikes() {
 		try {
-			this.getLikes().size();
+			this.likes.size();
 		}catch (NullPointerException e) {
 		}
 	}
-	
-//	public void forceLoadEntity() {
-//		forceLoadAnswers();
-//		forceLoadCompanies();
-//		forceLoadTags();
-//	}
 
 	@Override
 	public String toString() {

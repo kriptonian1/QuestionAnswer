@@ -27,6 +27,8 @@ public class QuestionController {
 	
 	@Autowired
 	private QuestionDao questionDao;
+	private static final String STATUS_SUCCESS = "SUCCESS";
+	private static final String STATUS_ERROR = "ERROR";
 	
 	@PostMapping(value = "/question", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public int postQuestion(@RequestBody PostQuestion requestQuestion) {
@@ -95,42 +97,82 @@ public class QuestionController {
 	
 	@PutMapping(value = "/question/{questionId}/like/{userId}")
 	public String addLike(@PathVariable int questionId, @PathVariable int userId) {
-		return String.valueOf(questionDao.addLike(questionId, userId));
+		try {
+			questionDao.addLike(questionId, userId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/question/{questionId}/like/{userId}")
 	public String removeLike(@PathVariable int questionId, @PathVariable int userId) {
-		return String.valueOf(questionDao.removeLike(questionId, userId));
+		try {
+			questionDao.removeLike(questionId, userId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/question/{questionId}")
 	public String deleteQuestion(@PathVariable int questionId) {
-		return String.valueOf(questionDao.deleteQuestion(questionId));
+		try {
+			questionDao.deleteQuestion(questionId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/question/{questionId}/tag/{tagId}")
 	public String removeTag(@PathVariable int tagId, @PathVariable int questionId) {
-		return String.valueOf(questionDao.removeTag(questionId, tagId));
+		try {
+			questionDao.removeTag(questionId, tagId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@PutMapping(value = "/question/{questionId}/tag/{tagId}")
 	public String addTag(@PathVariable int tagId, @PathVariable int questionId) {
-		return String.valueOf(questionDao.addTag(questionId, tagId));
+		try {
+			questionDao.addTag(questionId, tagId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@DeleteMapping(value = "/question/{questionId}/company/{companyId}")
 	public String removeCompany(@PathVariable int companyId, @PathVariable int questionId) {
-		return String.valueOf(questionDao.removeCompany(questionId, companyId));
+		try {
+			questionDao.removeCompany(questionId, companyId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@PutMapping(value = "/question/{questionId}/company/{companyId}")
 	public String addCompany(@PathVariable int companyId, @PathVariable int questionId) {
-		return String.valueOf(questionDao.addCompany(questionId, companyId));
+		try {
+			questionDao.addCompany(questionId, companyId);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 	
 	@PutMapping(value = "/{id}", consumes = MediaType.TEXT_PLAIN_VALUE)
 	public String editQuestion(@PathVariable int id, @RequestBody String question) {
-		return String.valueOf(questionDao.editQuestion(id, question));
+		try {
+			questionDao.editQuestion(id, question);
+			return STATUS_SUCCESS;
+		} catch (Exception e) {
+			return STATUS_ERROR;
+		}
 	}
 
 }
